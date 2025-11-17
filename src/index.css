@@ -1,0 +1,299 @@
+@import "tailwindcss";
+/* .profile-page-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.profile-card {
+  display: flex;
+  gap: 16px;
+  width: 40%;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-buttons {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.profile-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-summary {
+  margin-top: 12px;
+}
+
+.shift-card {
+  width: 300px;
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+} */
+ /* profileCard.module.css */
+
+
+/* .attendance-card {
+  padding: 24px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  background-color: #fff;
+} */
+ .attendance-card {
+  padding: 16px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  background-color: #fff;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablet (>=600px) */
+@media (min-width: 600px) {
+  .attendance-card {
+    padding: 24px;
+    max-width: 600px;
+    min-height: 320px;
+  }
+}
+
+/* Desktop (>=1024px) */
+@media (min-width: 1024px) {
+  .attendance-card {
+    padding: 32px;
+    max-width: 700px;
+    min-height: 350px;
+  }
+}
+
+
+.title {
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #666;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+
+/* .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+} */
+ .dot {
+  width: 10px;
+  height: 100px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Tablet (≥600px) */
+@media (min-width: 600px) {
+  .dot {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Desktop (≥1024px) */
+@media (min-width: 1024px) {
+  .dot {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+
+.level-1 {
+  background-color: #d0e8ff;
+}
+
+.level-2 {
+  background-color: #8cc8ff;
+}
+
+.level-3 {
+  background-color: #409eff;
+}
+
+.level-4 {
+  background-color: #0066cc;
+}
+
+.attendance-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.time-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.75rem;
+}
+
+.days-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.day-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cell {
+  width: 52px;
+  height: 22px;
+  border-radius: 2px;
+}
+
+
+@media (min-width: 600px) {
+  .cell {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Desktop (≥1024px) */
+@media (min-width: 1024px) {
+  .cell{
+    width: 52px;
+    height: 22px;
+  }
+}
+.today-task-container {
+  padding: 24px;
+  background-color: #f8f9fb;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.today-task-title {
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #1e1e1e;
+}
+
+.task-list {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.task-card {
+  flex: 1 1 45%;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.task-time {
+  font-weight: 500;
+  color: #3f3f3f;
+}
+
+.task-title {
+  font-weight: 600;
+  margin-top: 8px;
+  color: #1a1a1a;
+}
+
+.task-desc {
+  margin-top: 4px;
+  color: #666;
+  font-size: 14px;
+}
+.profile-card {
+  background-color: blue;
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-icon {
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 13px;
+  color: #999;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
