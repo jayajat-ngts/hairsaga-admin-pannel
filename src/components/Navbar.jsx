@@ -1,63 +1,64 @@
-import React from 'react';
-import { AppBar, Toolbar, IconButton, InputBase, Box, Avatar, Badge, Paper } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import SettingsIcon from '@mui/icons-material/Settings';
-import MailIcon from '@mui/icons-material/Mail';
-import FlagIcon from '@mui/icons-material/Flag';
+// Navbar.jsx
+import React from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  InputBase,
+  Box,
+  Avatar,
+  Badge,
+  Drawer,
+  Paper,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-const SearchWrapper = styled(Paper)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0.5, 2),
-  boxShadow: 'none',
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import SettingsIcon from "@mui/icons-material/Settings";
+import MailIcon from "@mui/icons-material/Mail";
+import FlagIcon from "@mui/icons-material/Flag";
+
+import Sidebar from "../components/SideBar"
+
+const SearchWrapper = styled(Paper)(() => ({
+  display: "flex",
+  alignItems: "center",
+  padding: "6px 16px",
   borderRadius: 24,
-  minWidth: 300,
-  border: '1px solid #f0f0f0',
+  minWidth: 260,
+  border: "1px solid #e0e0e0",
 }));
 
-const CircleButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: '#f5f9ff',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-  borderRadius: '50%',
-  width: 40,
-  height: 40,
-  '&:hover': {
-    backgroundColor: '#e8f0fe',
-  },
-}));
-
-const Navbar = () => {
+const Navbar = ({ onMenuClick }) => {
   return (
-    <AppBar position="sticky" color="default" elevation={0} sx={{ p: 1, backgroundColor: '#fff', boxShadow:"lg"}}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+    <AppBar position="sticky" color="default" elevation={0} sx={{ p: 1 }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        
+        {/* LEFT SIDE */}
         <Box display="flex" alignItems="center" gap={2}>
-          <CircleButton>
+          <IconButton onClick={onMenuClick} sx={{ display: { md: "none" } }}>
             <MenuIcon />
-          </CircleButton>
+          </IconButton>
+
           <SearchWrapper>
             <InputBase placeholder="Search Keywords..." sx={{ flex: 1 }} />
             <SearchIcon color="action" />
           </SearchWrapper>
         </Box>
 
+        {/* RIGHT SIDE */}
         <Box display="flex" alignItems="center" gap={2}>
-          <CircleButton>
-            <FlagIcon />
-          </CircleButton>
-          <CircleButton>
-            <SettingsIcon />
-          </CircleButton>
-          <CircleButton>
+          <IconButton><FlagIcon /></IconButton>
+          <IconButton><SettingsIcon /></IconButton>
+          <IconButton>
             <Badge badgeContent={4} color="error">
               <MailIcon />
             </Badge>
-          </CircleButton>
-          <CircleButton>
-            <Avatar src="https://i.pravatar.cc/300" />
-          </CircleButton>
+          </IconButton>
+          <Avatar src="https://i.pravatar.cc/300" />
         </Box>
+
       </Toolbar>
     </AppBar>
   );

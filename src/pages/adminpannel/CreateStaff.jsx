@@ -1,160 +1,303 @@
-// ✅ Full Professional Create Staff Form with Advanced Fields
-import React, { useState } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Grid,
-  Paper,
-  Snackbar,
-  Alert,
-  MenuItem,
-  Avatar,
-  IconButton,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-} from '@mui/material';
-import { motion } from 'framer-motion';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import { createStaff } from "../../api/staff";
 
-const roles = ['Hair Stylist', 'Receptionist', 'Manager', 'Therapist'];
-const statuses = ['Active', 'Inactive'];
-const genders = ['Male', 'Female', 'Other'];
+const roles = ["Hair Stylist", "Receptionist", "Manager", "Therapist"];
+const statuses = ["Active", "Inactive"];
+const genders = ["Male", "Female", "Other"];
 
 const CreateStaff = () => {
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    gender: '',
-    dob: '',
-    joinDate: '',
-    role: '',
-    status: 'Active',
-    experience: '',
-    address: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    gender: "",
+    dob: "",
+    joinDate: "",
+    role: "",
+    status: "Active",
+    experience: "",
+    address: "",
     image: null,
   });
 
   const [loading, setLoading] = useState(false);
-  const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' });
+  const [snack, setSnack] = useState({ open: false, message: "", type: "success" });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'image') {
+    if (name === "image") {
       setForm({ ...form, image: files[0] });
     } else {
       setForm({ ...form, [name]: value });
     }
   };
 
-  const handleCloseSnack = () => setSnack({ ...snack, open: false });
+  const showSnack = (message, type) => {
+    setSnack({ open: true, message, type });
+    setTimeout(() => setSnack({ open: false }), 3000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\d{10}$/;
-    if (!emailRegex.test(form.email)) return setSnack({ open: true, message: 'Invalid email format', severity: 'warning' });
-    if (!phoneRegex.test(form.phone)) return setSnack({ open: true, message: 'Phone must be 10 digits', severity: 'warning' });
+    const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneCheck = /^\d{10}$/;
 
-    setLoading(true);
+    if (!emailCheck.test(form.email)) return showSnack("Invalid Email Format", "warning");
+    if (!phoneCheck.test(form.phone))
+      return showSnack("Phone must be 10 digits", "warning");
+
     const data = new FormData();
     Object.entries(form).forEach(([key, value]) => data.append(key, value));
 
+    setLoading(true);
+
     try {
-      await axios.post('/api/admin/create-staff', data);
-      setSnack({ open: true, message: 'Staff created successfully!', severity: 'success' });
-      setForm({ name: '', email: '', phone: '', password: '', gender: '', dob: '', joinDate: '', role: '', status: 'Active', experience: '', address: '', image: null });
+   const res=await createStaff(data);
+      showSnack("Staff Created Successfully", "success");
+
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        gender: "",
+        dob: "",
+        joinDate: "",
+        role: "",
+        status: "Active",
+        experience: "",
+        address: "",
+        image: null,
+      });
     } catch (err) {
-      setSnack({ open: true, message: 'Error creating staff', severity: 'error' });
+      showSnack("Error creating staff", "error");
     }
+
     setLoading(false);
   };
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 5 }}>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
-          <Typography variant="h4" align="center" gutterBottom>New Staff Member</Typography>
-          <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="name" label="Full Name" value={form.name} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="email" label="Email" value={form.email} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="phone" label="Phone" value={form.phone} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="password" label="Password" type="password" value={form.password} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth><InputLabel>Gender</InputLabel>
-                  <Select name="gender" value={form.gender} label="Gender" onChange={handleChange}>
-                    {genders.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="dob" label="Date of Birth" type="date" InputLabelProps={{ shrink: true }} value={form.dob} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="joinDate" label="Joining Date" type="date" InputLabelProps={{ shrink: true }} value={form.joinDate} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth><InputLabel>Role</InputLabel>
-                  <Select name="role" value={form.role} label="Role" onChange={handleChange} required>
-                    {roles.map((r) => <MenuItem key={r} value={r}>{r}</MenuItem>)}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth><InputLabel>Status</InputLabel>
-                  <Select name="status" value={form.status} label="Status" onChange={handleChange}>
-                    {statuses.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth name="experience" label="Experience (Years)" type="number" value={form.experience} onChange={handleChange} /></Grid>
-              <Grid item xs={12}><TextField fullWidth name="address" label="Address" multiline rows={3} value={form.address} onChange={handleChange} /></Grid>
-              <Grid item xs={12}>
-                <Box display="flex" alignItems="center" gap={2}>
-                  <Avatar src={form.image ? URL.createObjectURL(form.image) : ''} sx={{ width: 56, height: 56 }} />
-                  <label htmlFor="upload-photo">
-                    <input
-                      style={{ display: 'none' }}
-                      id="upload-photo"
-                      name="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleChange}
-                    />
-                    <IconButton color="primary" aria-label="upload picture" component="span">
-                      <PhotoCamera />
-                    </IconButton>
-                  </label>
-                  <Typography variant="body2">Upload Profile Picture</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  disabled={loading}
-                  sx={{ py: 1.5, fontWeight: 600 }}
-                >
-                  {loading ? <CircularProgress size={24} /> : 'Create Staff'}
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Paper>
-      </motion.div>
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={handleCloseSnack}>
-        <Alert onClose={handleCloseSnack} severity={snack.severity} sx={{ width: '100%' }}>
+    <div className="max-w-5xl mx-auto mt-6 p-4">
+      {/* Snackbar */}
+      {snack.open && (
+        <div
+          className={`fixed top-4 right-4 px-4 py-2 rounded shadow-lg text-white 
+          ${snack.type === "success" ? "bg-green-600" : snack.type === "warning" ? "bg-yellow-500" : "bg-red-600"}`}
+        >
           {snack.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+        </div>
+      )}
+
+      {/* Card */}
+      <div className="bg-white shadow-lg rounded-lg p-6">
+        <h2 className="text-3xl font-bold text-center mb-6">New Staff Member</h2>
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-12 gap-4">
+
+          <div className="col-span-12 flex justify-center mb-4">
+            <label htmlFor="profilePic" className="cursor-pointer relative">
+
+              <img
+                src={
+                  form.image
+                    ? URL.createObjectURL(form.image)
+                    : "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                }
+                alt="Profile Preview"
+                className="w-28 h-28 rounded-full object-cover border shadow"
+              />
+
+              {/* Overlay */}
+              <div className="absolute inset-0 rounded-full bg-black bg-opacity-40 
+          text-white flex items-center justify-center opacity-0 
+          hover:opacity-100 transition">
+                {form.image ? "Change Picture" : "Choose Picture"}
+              </div>
+
+            </label>
+
+            <input
+              id="profilePic"
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) setForm({ ...form, image: file });
+              }}
+              className="hidden"
+            />
+          </div>
+
+          {/* Input Fields */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              required
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="Enter full name"
+            />
+          </div>
+
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              required
+              value={form.email}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="Enter email"
+            />
+          </div>
+
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Phone Number</label>
+            <input
+              type="text"
+              name="phone"
+              required
+              value={form.phone}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="10 digit number"
+            />
+          </div>
+
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Password</label>
+            <input
+              type="password"
+              name="password"
+              required
+              value={form.password}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="Create password"
+            />
+          </div>
+
+          {/* Gender */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Gender</label>
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1 bg-white"
+            >
+              <option value="">Select Gender</option>
+              {genders.map((g) => (
+                <option key={g}>{g}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* DOB */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Date of Birth</label>
+            <input
+              type="date"
+              name="dob"
+              value={form.dob}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+            />
+          </div>
+
+          {/* Join Date */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Joining Date</label>
+            <input
+              type="date"
+              name="joinDate"
+              required
+              value={form.joinDate}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+            />
+          </div>
+
+          {/* Role */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Role</label>
+            <select
+              name="role"
+              required
+              value={form.role}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1 bg-white"
+            >
+              <option value="">Select Role</option>
+              {roles.map((r) => (
+                <option key={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Status</label>
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1 bg-white"
+            >
+              {statuses.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Experience */}
+          <div className="col-span-12 sm:col-span-6">
+            <label className="font-semibold">Experience (Years)</label>
+            <input
+              type="number"
+              name="experience"
+              value={form.experience}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="Years of experience"
+            />
+          </div>
+
+          {/* Address */}
+          <div className="col-span-12">
+            <label className="font-semibold">Address</label>
+            <textarea
+              name="address"
+              rows="3"
+              value={form.address}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="Enter address"
+            ></textarea>
+          </div>
+
+          {/* Submit Button */}
+          <div className="col-span-12">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold mt-4 hover:bg-blue-700 transition"
+            >
+              {loading ? "Creating..." : "Create Staff"}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
   );
 };
 

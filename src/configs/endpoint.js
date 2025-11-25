@@ -9,22 +9,28 @@
 
 export const APiRoutes = {
   Bookings: {
-    getAll: '/api/bookings',
+    getAll: '/api/booking/get-all-booking',
     getById: (id) => `/api/bookings/${id}`,
     create: '/api/bookings',
     delete: (id) => `/api/bookings/${id}`,
     update: (id) => `/api/bookings/${id}`,
+   updateStatus: (id) => `/api/booking/updateStatus/${id}`,  // ✅ ADD THIS
   },
   Services: {
     getAll: '/api/services',
     getById: (id) => `/api/services/${id}`,
-    create: '/api/services',
+    create: '/api/services/create',   // ✅ FIXED
     delete: (id) => `/api/services/${id}`,
     update: (id) => `/api/services/${id}`,
   },
   Login:{
-    devLogin: '/api/login',
-  }
+    devLogin: '/api/user/login',
+  },  
+  Staff: {
+    create: "/api/staff/create",
+    getAll: "/api/staff",
+    updateStatus: (id) => `/api/staff/update-status/${id}`, // ✔ Correct
+  },
 
 };
 

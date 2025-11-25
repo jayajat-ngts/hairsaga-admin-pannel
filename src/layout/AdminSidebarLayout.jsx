@@ -1,33 +1,41 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/SideBar';
-import Navbar from '../components/Navbar';
-import { Box } from '@mui/material';
+// AdminSidebarLayout.jsx
 
-const AdminSidebarLayout = () => {
-  const SIDEBAR_WIDTH = 127; // width same as Sidebar
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Box, Drawer } from "@mui/material";
+import Sidebar from "../components/SideBar";
+import Navbar from "../components/Navbar";
+
+export default function AdminSidebarLayout() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      {/* Sidebar */}
-      <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
+    <Box sx={{ display: "flex" }}>
+      
+      {/* DESKTOP SIDEBAR */}
+      <Box sx={{ display: { xs: "none", md: "block" } }}>
         <Sidebar />
       </Box>
 
-      {/* Right Section */}
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Navbar */}
-        <Box sx={{ height: 64, ml: `${SIDEBAR_WIDTH}px` }}>
-          <Navbar />
-        </Box>
+      {/* MOBILE DRAWER SIDEBAR */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        <Sidebar inDrawer={true} onClose={() => setDrawerOpen(false)} />
+      </Drawer>
 
-        {/* Main Content */}
-        <Box sx={{ flexGrow: 1,  ml: `${SIDEBAR_WIDTH}px` }}>
+      {/* MAIN CONTENT */}
+      <Box sx={{ flexGrow: 1, ml: { md: "260px" } }}>
+        
+        {/* Navbar contains the mobile menu button */}
+        <Navbar onMenuClick={() => setDrawerOpen(true)} />
+
+        <Box sx={{ p: 2 }}>
           <Outlet />
         </Box>
       </Box>
     </Box>
   );
-};
-
-export default AdminSidebarLayout;
+}
