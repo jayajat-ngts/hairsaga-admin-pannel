@@ -18,7 +18,7 @@
 import httpClient from "../utils/HttpClient";
 
 export const devLogin = async (email, password, role) => {
-  const res = await httpClient.post("/user/login", { email, password, role });
+  const res = await httpClient.post("/api/user/login", { email, password, role });
   return res;
 };
 
