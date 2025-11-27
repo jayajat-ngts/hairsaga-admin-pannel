@@ -63,7 +63,15 @@ const Services = () => {
       (filter === "All" || service.category === filter) &&
       service.name.toLowerCase().includes(search.toLowerCase())
   );
-
+  const toTitleCase = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
   return (
     <div className="p-6">
       {/* Header */}
@@ -79,33 +87,39 @@ const Services = () => {
       </div>
 
       {/* Search + Filters */}
+      {/* Search + Filters */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
+
         {/* Search */}
-        <div className="flex items-center border px-3 py-2 rounded-lg bg-white w-full sm:w-64">
+        <div className="flex items-center bg-white border px-4 py-2 rounded-lg shadow-sm w-full sm:w-72">
           <FiSearch className="text-gray-500" />
           <input
             type="text"
             placeholder="Search services..."
-            className="ml-2 outline-none w-full"
+            className="ml-2 outline-none w-full text-gray-700"
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         {/* Categories */}
-        <div className="flex gap-3 overflow-x-auto">
+        <div className="flex gap-3 overflow-x-auto pb-2">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-4 py-2 rounded-full border ${filter === cat
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
-                }`}
+              className={`
+          px-5 py-2 rounded-full whitespace-nowrap text-sm font-medium 
+          border shadow-sm transition 
+          ${filter === cat
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-gray-700 hover:bg-gray-100"}
+        `}
             >
               {cat}
             </button>
           ))}
         </div>
+
       </div>
 
       {/* Services Grid */}
@@ -113,52 +127,56 @@ const Services = () => {
         {filteredServices.map((service) => (
           <div
             key={service._id}
-            className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition"
+            className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100"
           >
-            <img
-              src={
-                service.image
-                  ? `${import.meta.env.VITE_API_BASE_URL}/uploads/services/${service.image}`
-                  : "https://cdn-icons-png.flaticon.com/512/847/847969.png"
-              }
-              onError={(e) => {
-                e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
-              }}
-              alt={service?.name || "Service Image"}
-              className="w-full h-40 object-cover rounded-md"
-            />
+            {/* IMAGE */}
+            <div className="w-full h-48 overflow-hidden bg-gray-100">
+              <img
+                src={
+                  service.image
+                    ? `${import.meta.env.VITE_API_BASE_URL}/uploads/services/${service.image}`
+                    : "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                }
+                alt={service?.name || "Service Image"}
+                className="w-full h-full object-cover object-center"
+                onError={(e) => {
+                  e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                }}
+              />
+            </div>
 
+            {/* CONTENT */}
+            <div className="p-4 space-y-2">
+              <h3 className="font-semibold text-xl text-gray-900">{toTitleCase(service.name)}</h3>
+              <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full inline-block">
+                {service.category}
+              </span>
 
-            <div className="p-4">
-              <h3 className="font-bold text-xl">{service.name}</h3>
-              <p className="text-gray-500 text-sm">{service.category}</p>
-
-              <div className="mt-3 flex justify-between items-center">
-                <span className="text-lg font-semibold">₹{service.price}</span>
-                <span className="text-sm text-gray-500">
-                  {service.duration}
-                </span>
+              {/* PRICE + TIME */}
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-lg font-bold text-gray-800">₹{service.price}</span>
+                <span className="text-gray-500 text-sm">{service.duration} </span>
               </div>
 
-              <div className="flex justify-between mt-4">
+              {/* ACTIONS */}
+              <div className="flex justify-between pt-3 border-t mt-3">
                 <button
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
+                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
                   onClick={() => navigate(`/admin/edit-service/${service._id}`)}
                 >
                   <FiEdit /> Edit
                 </button>
 
-
                 <button
-                  className="flex items-center gap-1 text-red-600 hover:text-red-800"
+                  className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium"
                   onClick={() => handleDelete(service._id)}
                 >
                   <FiTrash2 /> Delete
                 </button>
-
               </div>
             </div>
           </div>
+
         ))}
       </div>
 

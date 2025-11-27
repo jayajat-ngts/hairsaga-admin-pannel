@@ -1,60 +1,108 @@
 import React, { useEffect, useState } from "react";
-import { getAllBookings, updateBookingStatus } from "../../api/bookings";
+import {
+  getAllBookings,
+  updateBookingStatus,
+  assignStaffToBooking,
+} from "../../api/bookings";
+import { getAllStaff } from "../../api/staff";
+import { ClipboardList, Clock, CheckCircle, XCircle } from "lucide-react";
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
+  const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // LOAD ALL BOOKINGS
   useEffect(() => {
     fetchBookings();
+    fetchStaff();
   }, []);
 
-  const fetchBookings = () => {
-    setLoading(true);
+  // LOAD BOOKINGS
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const res = await getAllBookings();
 
-    getAllBookings()
-      .then((res) => {
-        console.log("API RESPONSE:", res);
+      if (!Array.isArray(res?.data?.data)) {
+        console.error("Invalid booking response");
+        return;
+      }
 
-        if (!res || !res.data || !Array.isArray(res.data.data)) {
-          console.error("Invalid API response format");
-          return;
-        }
+      const normalized = res.data.data.map((b) => ({
+        id: b._id,
+        name: b.fullname,
+        service: b.selectservice,
+        date: b.selectdate,
+        time: b.selecttime,
+        status: b.status || "Pending",
+        assignedStaff: b.assignedStaff?._id || "", // keep selected staff
+        assignedStaffName: b.assignedStaff?.name || "", // display name
+      }));
 
-        const normalized = res.data.data.map((b) => ({
-          id: b._id,
-          name: b.fullname,
-          service: b.selectservice,
-          date: b.selectdate,
-          time: b.selecttime,
-          status: b.status || "Pending",
-        }));
-
-        setBookings(normalized);
-      })
-      .catch((err) => {
-        console.error("❌ Error fetching bookings:", err);
-        setBookings([]);
-      })
-      .finally(() => setLoading(false));
+      setBookings(normalized);
+    } catch (err) {
+      console.error("❌ Fetch bookings error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // UPDATE STATUS HANDLER
+  // LOAD STAFF (Active Only)
+  const fetchStaff = async () => {
+    try {
+      const res = await getAllStaff();
+
+      if (Array.isArray(res?.data?.data)) {
+        const active = res.data.data.filter((s) => s.status === "Active");
+        setStaffList(active);
+      }
+    } catch (err) {
+      console.error("❌ Staff load error:", err);
+    }
+  };
+
+  // UPDATE BOOKING STATUS
   const handleStatusChange = async (id, newStatus) => {
     try {
       await updateBookingStatus(id, newStatus);
-      fetchBookings(); // Reload updated data
+      fetchBookings();
     } catch (err) {
-      console.error("❌ Failed to update status", err);
+      console.error("❌ Status update failed:", err);
       alert("Status update failed!");
     }
   };
 
-  // COUNT STATISTICS
+  // ASSIGN STAFF TO BOOKING (SAVE IN DB)
+  const handleAssignStaff = async (bookingId, staffId) => {
+    try {
+      await assignStaffToBooking(bookingId, staffId);
+
+      // Update UI instantly
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId
+            ? {
+              ...b,
+              assignedStaff: staffId,
+              assignedStaffName:
+                staffList.find((s) => s._id === staffId)?.name || "",
+            }
+            : b
+        )
+      );
+
+      console.log("Staff assigned successfully!");
+    } catch (err) {
+      console.error("❌ Assign staff failed:", err);
+      alert("Failed to assign staff!");
+    }
+  };
+
+  // COUNTS
   const totalBookings = bookings.length;
   const pendingBookings = bookings.filter((b) => b.status === "Pending").length;
   const completedBookings = bookings.filter((b) => b.status === "Completed").length;
+  const cancelledBookings = bookings.filter((b) => b.status === "Cancelled").length;
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -63,85 +111,142 @@ const Bookings = () => {
       case "Pending":
         return "bg-yellow-100 text-yellow-700 border border-yellow-500";
       default:
-        return "bg-gray-100 text-gray-700 border border-gray-500";
+        return "bg-red-100 text-gray-700 border border-red-500";
     }
   };
 
   return (
     <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
-      
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-blue-600">Bookings Management</h1>
-      </div>
+      <h1 className="text-2xl sm:text-3xl font-bold text-black-600 mb-6">
+        Bookings Management
+      </h1>
 
-      {/* STATS */}
+      {/* Stats */}
       <div className="grid grid-cols-12 gap-4 mb-6">
-        <div className="col-span-12 md:col-span-4 bg-white rounded shadow p-5">
-          <p className="text-gray-500 text-sm">Total Bookings</p>
-          <h2 className="text-3xl font-bold">{totalBookings}</h2>
+        <div className="col-span-12 sm:col-span-6 lg:col-span-3">
+          <div className="bg-white shadow-md rounded-xl p-5 flex items-center gap-4 hover:shadow-xl transition">
+            <div className="bg-blue-100 text-blue-600 p-3 rounded-full">
+              <ClipboardList size={28} />
+            </div>
+            <div>
+              <p className="text-gray-600">Total Bookings</p>
+              <h2 className="text-3xl font-bold">{totalBookings}</h2>
+            </div>
+          </div>
         </div>
 
-        <div className="col-span-12 md:col-span-4 bg-white rounded shadow p-5">
-          <p className="text-gray-500 text-sm">Pending</p>
-          <h2 className="text-3xl font-bold text-yellow-600">{pendingBookings}</h2>
+        {/* Pending */}
+        <div className="col-span-12 sm:col-span-6 lg:col-span-3">
+          <div className="bg-white shadow-md rounded-xl p-5 flex items-center gap-4 hover:shadow-xl transition">
+            <div className="bg-yellow-100 text-yellow-600 p-3 rounded-full">
+              <Clock size={28} />
+            </div>
+            <div>
+              <p className="text-gray-600">Pending</p>
+              <h2 className="text-3xl font-bold text-yellow-600">{pendingBookings}</h2>
+            </div>
+          </div>
         </div>
 
-        <div className="col-span-12 md:col-span-4 bg-white rounded shadow p-5">
-          <p className="text-gray-500 text-sm">Completed</p>
-          <h2 className="text-3xl font-bold text-green-600">{completedBookings}</h2>
+        {/* Completed */}
+        <div className="col-span-12 sm:col-span-6 lg:col-span-3">
+          <div className="bg-white shadow-md rounded-xl p-5 flex items-center gap-4 hover:shadow-xl transition">
+            <div className="bg-green-100 text-green-600 p-3 rounded-full">
+              <CheckCircle size={28} />
+            </div>
+            <div>
+              <p className="text-gray-600">Completed</p>
+              <h2 className="text-3xl font-bold text-green-600">{completedBookings}</h2>
+            </div>
+          </div>
+        </div>
+
+        {/* Cancelled */}
+        <div className="col-span-12 sm:col-span-6 lg:col-span-3">
+          <div className="bg-white shadow-md rounded-xl p-5 flex items-center gap-4 hover:shadow-xl transition">
+            <div className="bg-red-100 text-red-600 p-3 rounded-full">
+              <XCircle size={28} />
+            </div>
+            <div>
+              <p className="text-gray-600">Cancelled</p>
+              <h2 className="text-3xl font-bold text-red-600">{cancelledBookings}</h2>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* TABLE */}
-      <div className="bg-white shadow rounded p-4 sm:p-6">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4">Booking List</h2>
+      <div className="bg-white rounded shadow p-4">
+        <h2 className="text-xl font-semibold mb-4">Booking List</h2>
 
         {loading ? (
-          <div className="flex justify-center py-10">
-            <div className="animate-spin w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+          <div className="text-center py-10">
+            <div className="animate-spin w-10 h-10 border-4 border-t-transparent rounded-full"></div>
           </div>
-        ) : bookings.length === 0 ? (
-          <p className="text-gray-600">No bookings available.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border text-sm sm:text-base">
-              <thead className="bg-gray-200 text-gray-700">
-                <tr>
-                  <th className="p-3 border">Name</th>
-                  <th className="p-3 border">Service</th>
-                  <th className="p-3 border">Date</th>
-                  <th className="p-3 border">Time</th>
-                  <th className="p-3 border">Status</th>
+          <table className="w-full text-sm border-separate border-spacing-y-2">
+            <thead>
+              <tr className="text-left bg-gray-100 text-gray-700 rounded-lg">
+                <th className="p-3">Name</th>
+                <th className="p-3">Service</th>
+                <th className="p-3">Date</th>
+                <th className="p-3">Time</th>
+                <th className="p-3">Assigned Staff</th>
+                <th className="p-3">Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {bookings.map((b) => (
+                <tr
+                  key={b.id}
+                  className="bg-white shadow-sm rounded-xl hover:bg-gray-50 transition"
+                >
+                  <td className="p-3 rounded-l-xl">{b.name}</td>
+                  <td className="p-3">{b.service}</td>
+                  <td className="p-3">{b.date}</td>
+                  <td className="p-3">{b.time}</td>
+
+                  {/* STAFF DROPDOWN */}
+                  <td className="p-3">
+                    <select
+                      value={b.assignedStaff}
+                      onChange={(e) => handleAssignStaff(b.id, e.target.value)}
+                      className="border px-3 py-2 rounded-lg bg-white shadow-sm"
+                    >
+                      <option value="">Select Staff</option>
+                      {staffList.map((s) => (
+                        <option key={s._id} value={s._id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+
+                  {/* STATUS BADGE + DROPDOWN */}
+                  <td className="p-3 rounded-r-xl">
+                    <select
+                      value={b.status}
+                      onChange={(e) => handleStatusChange(b.id, e.target.value)}
+                      className={`px-3 py-1 rounded-full font-medium 
+              ${b.status === "Completed"
+                          ? "bg-green-100 text-green-700 border border-green-400"
+                          : b.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-700 border border-yellow-400"
+                            : "bg-red-100 text-red-700 border border-red-400"
+                        }
+            `}
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking.id} className="text-center hover:bg-gray-50">
-                    <td className="p-3 border">{booking.name}</td>
-                    <td className="p-3 border">{booking.service}</td>
-                    <td className="p-3 border">{booking.date}</td>
-                    <td className="p-3 border">{booking.time}</td>
+              ))}
+            </tbody>
+          </table>
 
-                    {/* STATUS DROPDOWN */}
-                    <td className="p-3 border">
-                      <select
-                        value={booking.status}
-                        onChange={(e) => handleStatusChange(booking.id, e.target.value)}
-                        className={`px-3 py-1 rounded font-semibold text-sm cursor-pointer ${getStatusColor(
-                          booking.status
-                        )}`}
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                    </td>
-
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         )}
       </div>
     </div>
