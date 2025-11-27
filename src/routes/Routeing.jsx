@@ -24,6 +24,8 @@ import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import Rigester from '../pages/rigester';
 import EditService from '../pages/adminpannel/EditServices';
+import StaffList from '../pages/adminpannel/StaffList';
+import InquiryPage from '../pages/adminpannel/Inquiry';
 
 const Routeing = () => {
   return (
@@ -44,8 +46,12 @@ const Routeing = () => {
           <Route path="add-service" element={<ServicePage />} />
 
           <Route path="create-staff" element={<CreateStaff />} />
+          <Route path="staff-list" element={<StaffList />} />
+
           <Route path="assign-task" element={<AssignTask />} />
           <Route path="edit-service/:id" element={<EditService />} />
+          <Route path="inquiries" element={<InquiryPage />} />
+
           {/* Default redirect */}
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>

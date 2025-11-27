@@ -27,3 +27,10 @@ export const updateBookingStatus = (id, status) =>
     url: APiRoutes.Bookings.updateStatus(id),
     data: { status },
   });
+  export const assignStaffToBooking = (id, staffId) => {
+  return httpClient({
+    method: httpMethod.Patch,
+    url: APiRoutes.Bookings.assignStaff(id),
+    data: { staffId }
+  });
+};

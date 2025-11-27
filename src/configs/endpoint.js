@@ -15,6 +15,7 @@ export const APiRoutes = {
     delete: (id) => `/api/bookings/${id}`,
     update: (id) => `/api/bookings/${id}`,
    updateStatus: (id) => `/api/booking/updateStatus/${id}`,  // ✅ ADD THIS
+    assignStaff: (id) => `/api/booking/assign-staff/${id}`,
   },
   Services: {
     getAll: '/api/services',
@@ -31,6 +32,9 @@ export const APiRoutes = {
     getAll: "/api/staff",
     updateStatus: (id) => `/api/staff/update-status/${id}`, // ✔ Correct
   },
+  inquiry:{
+    getAll: '/api/contact',
+  }
 
 };
 

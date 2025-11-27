@@ -11,30 +11,30 @@ import {
   Paper,
   Avatar,
   Divider,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-import CloseIcon from "@mui/icons-material/Close";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import BookOnlineIcon from "@mui/icons-material/BookOnline";
-import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import LogoutIcon from "@mui/icons-material/Logout";
+// ⭐ Lucide Icons (Perfect Visual Consistency)
+import {
+  LayoutDashboard,
+  CalendarCheck,
+  ClipboardList,
+  Users,
+  UserPlus,
+  Mail,
+  LogOut,
+  X,
+} from "lucide-react";
 
-// ⭐ Prevent inDrawer from going to DOM
 const SidebarContainer = styled(
   Paper,
   { shouldForwardProp: (prop) => prop !== "inDrawer" }
 )(({ theme, inDrawer }) => ({
   width: 260,
   height: "100vh",
-
-  // FIX for mobile
   display: inDrawer ? "flex" : "none",
 
-  // Desktop only
   [theme.breakpoints.up("md")]: {
     display: "flex",
     position: inDrawer ? "relative" : "fixed",
@@ -47,8 +47,6 @@ const SidebarContainer = styled(
   boxShadow: theme.shadows[5],
 }));
 
-
-
 const ProfileBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   display: "flex",
@@ -58,32 +56,44 @@ const ProfileBox = styled(Box)(({ theme }) => ({
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   "&.Mui-selected": {
-    backgroundColor: theme.palette.primary.light,
-    borderLeft: `4px solid ${theme.palette.primary.main}`,
+    backgroundColor: theme.palette.primary.main + " !important",
+    borderLeft: `4px solid ${theme.palette.primary.dark}`,
+    color: "#fff !important",
   },
+
+  "&.Mui-selected .MuiListItemIcon-root": {
+    color: "#fff !important",
+  },
+
+  "&.Mui-selected .MuiTypography-root": {
+    color: "#fff !important",
+  },
+
   "&:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.primary.light,
     transform: "scale(1.02)",
   },
+
   transition: "all 0.3s ease",
 }));
+
 
 const Sidebar = ({ inDrawer = false, onClose }) => {
   const location = useLocation();
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "dashboard" },
-    { text: "Bookings", icon: <BookOnlineIcon />, path: "bookings" },
-    { text: "Services", icon: <MiscellaneousServicesIcon />, path: "services" },
-    { text: "Create Staff", icon: <PeopleAltIcon />, path: "create-staff" },
-    { text: "Assign Task", icon: <AssignmentIcon />, path: "assign-task" },
-    { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
+    { text: "Dashboard", icon: <LayoutDashboard size={20} />, path: "dashboard" },
+    { text: "Bookings", icon: <CalendarCheck size={20} />, path: "bookings" },
+    { text: "Services", icon: <ClipboardList size={20} />, path: "services" },
+    { text: "Create Staff", icon: <UserPlus size={20} />, path: "create-staff" },
+    { text: "Staff List", icon: <Users size={20} />, path: "staff-list" },
+    { text: "Inquiries", icon: <Mail size={20} />, path: "inquiries" },
+    { text: "Logout", icon: <LogOut size={20} />, path: "/logout" },
   ];
 
   return (
     <SidebarContainer inDrawer={inDrawer}>
-      
-      {/* Profile */}
+
       <ProfileBox>
         <Avatar sx={{ bgcolor: "primary.main" }}>A</Avatar>
         <Box>
@@ -96,7 +106,6 @@ const Sidebar = ({ inDrawer = false, onClose }) => {
         </Box>
       </ProfileBox>
 
-      {/* ⭐ Mobile Close Button */}
       {inDrawer && (
         <Box
           sx={{
@@ -107,14 +116,13 @@ const Sidebar = ({ inDrawer = false, onClose }) => {
           }}
         >
           <IconButton onClick={onClose}>
-            <CloseIcon />
+            <X />
           </IconButton>
         </Box>
       )}
 
       <Divider />
 
-      {/* Menu */}
       <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => (
           <ListItem disablePadding key={item.text}>
@@ -122,15 +130,23 @@ const Sidebar = ({ inDrawer = false, onClose }) => {
               component={RouterLink}
               to={item.path}
               selected={location.pathname.includes(item.path)}
-              onClick={onClose} // ⭐ Auto close drawer when clicking menu
+              onClick={onClose}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon
+                className="MuiListItemIcon-root"
+                sx={{ minWidth: 40, color: "#555" }}
+              >
+                {item.icon}
+              </ListItemIcon>
+
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{ fontSize: 15, fontWeight: 500 }}
+              />
             </StyledListItemButton>
           </ListItem>
         ))}
       </List>
-
     </SidebarContainer>
   );
 };
