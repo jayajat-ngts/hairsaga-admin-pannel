@@ -60,7 +60,7 @@ const Login = () => {
       <Card sx={{ width: 400, borderRadius: 3, boxShadow: 10 }}>
         <CardContent>
           <Typography variant="h4" fontWeight="bold" textAlign="center" color="primary.main" mb={2}>
-            Silverclip Salon
+            Hair Saga Salon
           </Typography>
 
           <Divider sx={{ mb: 3 }} />

@@ -1,312 +1,3 @@
-
-// import {
-//   PieChart, Pie, Cell,
-//   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
-//   LineChart, Line,
-//   ResponsiveContainer
-// } from "recharts";
-//  import React, { useEffect, useState } from "react";
-// import { getAllBookings } from "../../api/bookings";
-//  import { getAllServices } from "../../api/service";
-//  import { getAllStaff, updateStaffStatus } from "../../api/staff";
-// const Dashboard = () => {
-//    const [stats, setStats] = useState({
-//      totalBookings: 0,
-//     totalServices: 0,
-//     totalStaff:0,
-//    });
-//    const [staffList, setStaffList] = useState([]);
-//    const [segmentationData, setSegmentationData] = useState([]);
-
-
-//   useEffect(() => {
-//   const fetchCounts = async () => {
-//     try {
-//       const [bookingRes, serviceRes, staffRes] = await Promise.all([
-//         getAllBookings(),
-//         getAllServices(),
-//         getAllStaff(),
-//       ]);
-
-//       // COUNTS
-//       setStats({
-//         totalBookings: Array.isArray(bookingRes?.data?.data)
-//           ? bookingRes.data.data.length
-//           : 0,
-
-//         totalServices: Array.isArray(serviceRes?.data?.data)
-//           ? serviceRes.data.data.length
-//           : 0,
-
-//         totalStaff: Array.isArray(staffRes?.data?.data)
-//           ? staffRes.data.data.length
-//           : 0,
-//       });
-
-//       // STAFF LIST
-//       const normalizedStaff = Array.isArray(staffRes?.data?.data)
-//         ? staffRes.data.data.map((s) => ({
-//             id: s._id,
-//             name: s.name,
-//             role: s.role || "Staff",
-//             status: s.status || "Active",
-//             image: s.image || null,
-//           }))
-//         : [];
-
-//       setStaffList(normalizedStaff);
-
-//       // ✅ DYNAMIC SEGMENTATION DATA (Services Pie Chart)
-//       setSegmentationData(
-//         Array.isArray(serviceRes?.data?.data)
-//           ? serviceRes.data.data.map((srv) => ({
-//               name: srv.name,
-//               value: srv.price || 10, // Use price or duration
-//             }))
-//           : []
-//       );
-//     } catch (err) {
-//       console.error("Dashboard load error:", err);
-//     }
-//   };
-
-//   fetchCounts();
-// }, []);
-
-
-
-//    const handleStatusChange = async (id, newStatus) => {
-//   try {
-//     const res = await updateStaffStatus(id, newStatus);  // ✔ API hit now works
-//     console.log("Updated:", res.data);
-
-//     // Update UI
-//     setStaffList((prev) =>
-//       prev.map((item) =>
-//         item.id === id ? { ...item, status: newStatus } : item
-//       )
-//     );
-
-//     alert("Status Updated!");
-//   } catch (err) {
-//     console.error("Status update error:", err);
-//     alert("Failed to update status!");
-//   }
-// };
-
-//   const metrics = [
-//     { title: "Total Clients", value: 26, percent: 4 },
-//     { title: "Total Staff", value: stats.totalStaff },
-//      { title: "Total Bookings", value: stats.totalBookings },
-//     { title: "Total Services", value: stats.totalServices },
-//   ];
-
-//   const employees = [
-//     { name: "Wade Warren", status: "Approve", job: "Master" },
-//     { name: "Guy Hawkins", status: "Approve", job: "Master" },
-//     { name: "Robert Fox", status: "Approve", job: "Master" },
-//     { name: "Wade Warren", status: "Approve", job: "Master" },
-//     { name: "Jane Cooper", status: "Approve", job: "Master" },
-//   ];
-
-//   // const segmentationData = [
-//   //   { name: "Haircut", value: 45 },
-//   //   { name: "Beard trim", value: 35 },
-//   //   { name: "Shaving", value: 20 },
-//   // ];
-
-//   const COLORS = ["#2196f3", "#4caf50", "#ff9800"];
-
-//   const growthData = [
-//     { month: "Jan", bookings: 50000, cancellations: 20000 },
-//     { month: "Feb", bookings: 60000, cancellations: 25000 },
-//     { month: "Mar", bookings: 40000, cancellations: 30000 },
-//     { month: "Apr", bookings: 70000, cancellations: 45000 },
-//     { month: "May", bookings: 80000, cancellations: 60000 },
-//     { month: "Jun", bookings: 50000, cancellations: 35000 },
-//   ];
-
-//   const barData = [
-//     { month: "Jan", value: 60 },
-//     { month: "Feb", value: 80 },
-//     { month: "Mar", value: 50 },
-//     { month: "Apr", value: 100 },
-//     { month: "May", value: 60 },
-//     { month: "Jun", value: 70 },
-//   ];
-
-//   return (
-//     <div className="w-full p-4 md:p-6">
-
-//       {/* HEADER */}
-//       <div className="flex flex-wrap justify-between items-center mb-4">
-//         <h1 className="text-2xl font-semibold">Hello, John</h1>
-
-//         <button className="bg-blue-600 text-white px-4 py-2 rounded mt-3 md:mt-0">
-//           Generate Report
-//         </button>
-//       </div>
-
-//        <div className="w-full p-4 md:p-6">
-//        <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
-
-//       <div className="grid grid-cols-12 gap-4">
-//          {metrics.map((m, i) => (
-//           <div key={i} className="col-span-12 sm:col-span-6 lg:col-span-3">
-//             <div className="bg-white shadow rounded p-4 h-full">
-//               <p className="text-gray-600">{m.title}</p>
-//               <h2 className="text-2xl font-bold">{m.value}</h2>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-
-//       {/* EMPLOYEE TABLE + PIE CHART */}
-//       <div className="grid grid-cols-12 gap-4 mt-6">
-
-//         {/* EMPLOYEE TABLE */}
-
-//         <div className="col-span-12 lg:col-span-6">
-//           <div className="bg-white rounded shadow p-4 h-full">
-//             <h2 className="text-lg font-semibold mb-3">Employees</h2>
-
-//             <div className="overflow-x-auto">
-//               <table className="w-full border text-sm md:text-base">
-//                 <thead className="bg-gray-100">
-//                   <tr>
-//                     <th className="p-2 border text-left">Profile</th>
-//                     <th className="p-2 border text-left">Name</th>
-//                     <th className="p-2 border text-left">Role</th>
-//                     <th className="p-2 border text-left">Status</th>
-//                   </tr>
-//                 </thead>
-
-//                 <tbody>
-//                   {staffList.length === 0 ? (
-//                     <tr>
-//                       <td colSpan="4" className="p-4 text-center">
-//                         No staff found.
-//                       </td>
-//                     </tr>
-//                   ) : (
-//                     staffList.map((item) => (
-//                       <tr key={item.id} className="hover:bg-gray-100">
-//                         <td className="p-2 border">
-//                           <img
-//                             src={
-//                               item.image
-//                                 ? `${import.meta.env.VITE_API_BASE_URL}/uploads/services/${item.image}`
-//                                 : "https://cdn-icons-png.flaticon.com/512/847/847969.png"
-//                             }
-//                             alt="profile"
-//                             className="w-12 h-12 object-cover rounded-full"
-//                           />
-//                         </td>
-
-//                         <td className="p-2 border">{item.name}</td>
-//                         <td className="p-2 border">{item.role}</td>
-
-//                         {/* STATUS SELECT */}
-//                         <td className="p-2 border">
-//                           <select
-//                             value={item.status}
-//                             onChange={(e) =>
-//                               handleStatusChange(item.id, e.target.value)
-//                             }
-//                             className={`px-2 py-1 rounded text-sm ${
-//                               item.status === "Active"
-//                                 ? "bg-green-100 text-green-700"
-//                                 : "bg-red-100 text-red-700"
-//                             }`}
-//                           >
-//                             <option value="Active">Active</option>
-//                             <option value="Inactive">Inactive</option>
-//                           </select>
-//                         </td>
-//                       </tr>
-//                     ))
-//                   )}
-//                 </tbody>
-//               </table>
-//             </div>
-
-//           </div>
-//          </div>
-//         {/* PIE CHART */}
-//         <div className="col-span-12 lg:col-span-6">
-//           <div className="bg-white rounded shadow p-4 h-full">
-//             <h2 className="text-lg font-semibold mb-3">Segmentation</h2>
-
-//             <div className="w-full h-64 md:h-72">
-//               <ResponsiveContainer>
-//                 <PieChart>
-//                   <Pie data={segmentationData} dataKey="value" label>
-//   {segmentationData.map((entry, index) => (
-//     <Cell key={index} fill={COLORS[index % COLORS.length]} />
-//   ))}
-// </Pie>
-
-//                 </PieChart>
-//               </ResponsiveContainer>
-//             </div>
-
-//           </div>
-//         </div>
-
-//       </div>
-
-//       {/* LINE + BAR CHART */}
-//       <div className="grid grid-cols-12 gap-4 mt-6">
-
-//         {/* LINE CHART */}
-//         <div className="col-span-12 lg:col-span-6">
-//           <div className="bg-white rounded shadow p-4">
-//             <h2 className="text-lg font-semibold mb-3">Customer Growth Rate</h2>
-
-//             <div className="w-full h-72 md:h-80">
-//               <ResponsiveContainer>
-//                 <LineChart data={growthData}>
-//                   <XAxis dataKey="month" />
-//                   <YAxis />
-//                   <Tooltip />
-//                   <Legend />
-//                   <Line type="monotone" dataKey="bookings" stroke="#2196f3" />
-//                   <Line type="monotone" dataKey="cancellations" stroke="#ff9800" />
-//                 </LineChart>
-//               </ResponsiveContainer>
-//             </div>
-
-//           </div>
-//         </div>
-
-//         {/* BAR CHART */}
-//         <div className="col-span-12 lg:col-span-6">
-//           <div className="bg-white rounded shadow p-4">
-//             <h2 className="text-lg font-semibold mb-3">Services-wise Bookings</h2>
-
-//             <div className="w-full h-72 md:h-80">
-//               <ResponsiveContainer>
-//                 <BarChart data={barData}>
-//                   <XAxis dataKey="month" />
-//                   <YAxis />
-//                   <Tooltip />
-//                   <Bar dataKey="value" fill="#4caf50" barSize={40} />
-//                 </BarChart>
-//               </ResponsiveContainer>
-//             </div>
-
-//           </div>
-//         </div>
-
-//       </div>
-
-//     </div>
-//   );
-// };
-
-// export default Dashboard;
-
 import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
@@ -320,61 +11,127 @@ import { Users, Briefcase, Book, Scissors } from "lucide-react";
 import { getAllBookings } from "../../api/bookings";
 import { getAllServices } from "../../api/service";
 import { getAllStaff, updateStaffStatus } from "../../api/staff";
+import { getAllInquiries } from "../../api/inquiry";
+
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalBookings: 0,
     totalServices: 0,
     totalStaff: 0,
+    totalInquiry: 0,
   });
 
   const [staffList, setStaffList] = useState([]);
   const [segmentationData, setSegmentationData] = useState([]);
+  const [barData, setBarData] = useState([]);     
+  const [monthData, setMonthData] = useState([]); 
+  const [growthData, setGrowthData] = useState([]);
 
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [bookingRes, serviceRes, staffRes] = await Promise.all([
+        const [bookingRes, serviceRes, staffRes, inquiryRes] = await Promise.all([
           getAllBookings(),
           getAllServices(),
           getAllStaff(),
+          getAllInquiries(),
         ]);
 
+        const bookings = bookingRes?.data?.data || [];
+        const services = serviceRes?.data?.data || [];
+        const staff = staffRes?.data?.data || [];
+        const inquiries = inquiryRes?.data?.data || [];
+
+        // ------------------ STATS ------------------
         setStats({
-          totalBookings: Array.isArray(bookingRes?.data?.data)
-            ? bookingRes.data.data.length
-            : 0,
-
-          totalServices: Array.isArray(serviceRes?.data?.data)
-            ? serviceRes.data.data.length
-            : 0,
-
-          totalStaff: Array.isArray(staffRes?.data?.data)
-            ? staffRes.data.data.length
-            : 0,
+          totalBookings: bookings.length,
+          totalServices: services.length,
+          totalStaff: staff.length,
+          totalInquiry: inquiries.length,
         });
 
-        const normalizedStaff = Array.isArray(staffRes?.data?.data)
-          ? staffRes.data.data.map((s) => ({
-            id: s._id,
-            name: s.name,
-            role: s.role || "Staff",
-            status: s.status || "Active",
-            image: s.image || null,
-          }))
-          : [];
-
+        // ------------------ STAFF LIST ------------------
+        const normalizedStaff = staff.map((s) => ({
+          id: s._id,
+          name: s.name,
+          role: s.role || "Staff",
+          status: s.status || "Active",
+          image: s.image || null,
+        }));
         setStaffList(normalizedStaff);
 
-        // PIE CHART DATA
+        // ------------------ PIE CHART ------------------
         setSegmentationData(
-          Array.isArray(serviceRes?.data?.data)
-            ? serviceRes.data.data.map((srv) => ({
-              name: srv.name,
-              value: srv.price || 10,
-            }))
-            : []
+          services.map((srv) => ({
+            name: srv.name,
+            value: srv.price || 10,
+          }))
         );
+
+        // ------------------ SERVICE-WISE BOOKINGS ------------------
+        const serviceCountMap = {};
+
+        bookings.forEach((b) => {
+          const serviceName =
+            b?.service?.name ||
+            services.find((s) => s._id === b.serviceId)?.name ||
+            "Unknown";
+
+          serviceCountMap[serviceName] =
+            (serviceCountMap[serviceName] || 0) + 1;
+        });
+
+        const serviceWiseBooking = Object.entries(serviceCountMap).map(
+          ([service, total]) => ({ service, total })
+        );
+
+        setBarData(serviceWiseBooking);
+
+        // ------------------ MONTH-WISE BOOKINGS ------------------
+        const monthCountMap = {};
+
+        bookings.forEach((b) => {
+          const date = new Date(b.createdAt);
+          const monthIndex = date.getMonth();
+          const monthName = MONTHS[monthIndex];
+          monthCountMap[monthName] = (monthCountMap[monthName] || 0) + 1;
+        });
+
+        setMonthData(
+          MONTHS.map((m) => ({
+            month: m,
+            total: monthCountMap[m] || 0,
+          }))
+        );
+
+        // ------------ DYNAMIC BOOKINGS + CANCELLATIONS ------------
+        const bookedMap = {};
+        const cancelledMap = {};
+
+        bookings.forEach((b) => {
+          const date = new Date(b.createdAt);
+          const month = MONTHS[date.getMonth()];
+
+          if (b.status?.toLowerCase() === "cancelled") {
+            cancelledMap[month] = (cancelledMap[month] || 0) + 1;
+          } else {
+            bookedMap[month] = (bookedMap[month] || 0) + 1;
+          }
+        });
+
+        setGrowthData(
+          MONTHS.map((m) => ({
+            month: m,
+            bookings: bookedMap[m] || 0,
+            cancellations: cancelledMap[m] || 0,
+          }))
+        );
+
       } catch (err) {
         console.error("Dashboard load error:", err);
       }
@@ -383,9 +140,11 @@ const Dashboard = () => {
     fetchCounts();
   }, []);
 
+
+  // ------------------ STAFF STATUS UPDATE ------------------
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await updateStaffStatus(id, newStatus);
+      await updateStaffStatus(id, newStatus);
 
       setStaffList((prev) =>
         prev.map((item) =>
@@ -400,33 +159,17 @@ const Dashboard = () => {
     }
   };
 
-  // ⭐ Updated Metrics with Icons
+
+  // ------------------ METRICS ------------------
   const metrics = [
-    { title: "Total Clients", value: 26, icon: Users, color: "bg-blue-100 text-blue-600" },
+    { title: "Total Inquiry", value: stats.totalInquiry, icon: Users, color: "bg-blue-100 text-blue-600" },
     { title: "Total Staff", value: stats.totalStaff, icon: Briefcase, color: "bg-green-100 text-green-600" },
     { title: "Total Bookings", value: stats.totalBookings, icon: Book, color: "bg-purple-100 text-purple-600" },
     { title: "Total Services", value: stats.totalServices, icon: Scissors, color: "bg-orange-100 text-orange-600" },
   ];
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
+  const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-  const growthData = [
-    { month: "Jan", bookings: 50000, cancellations: 20000 },
-    { month: "Feb", bookings: 60000, cancellations: 25000 },
-    { month: "Mar", bookings: 40000, cancellations: 30000 },
-    { month: "Apr", bookings: 70000, cancellations: 45000 },
-    { month: "May", bookings: 80000, cancellations: 60000 },
-    { month: "Jun", bookings: 50000, cancellations: 35000 },
-  ];
-
-  const barData = [
-    { month: "Jan", value: 60 },
-    { month: "Feb", value: 80 },
-    { month: "Mar", value: 50 },
-    { month: "Apr", value: 100 },
-    { month: "May", value: 60 },
-    { month: "Jun", value: 70 },
-  ];
 
   return (
     <div className="w-full p-4 md:p-6">
@@ -434,10 +177,7 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
       {/* HEADER */}
       <div className="flex flex-wrap justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold">Hello, John</h1>
-
-        <button className="bg-blue-600 text-white px-4 py-2 rounded mt-3 md:mt-0">
-          Generate Report
-        </button>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded">Generate Report</button>
       </div>
 
       {/* METRICS */}
@@ -450,7 +190,7 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
             return (
               <div key={i} className="col-span-12 sm:col-span-6 lg:col-span-3">
-                <div className="bg-white shadow-md hover:shadow-xl transition rounded-xl p-5 flex items-center gap-4">
+                <div className="bg-white shadow-md rounded-xl p-5 flex items-center gap-4">
 
                   <div className={`p-3 rounded-full ${m.color}`}>
                     <Icon size={28} />
@@ -468,7 +208,8 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
         </div>
       </div>
 
-      {/* EMPLOYEE TABLE + PIE */}
+
+      {/* EMPLOYEE TABLE + PIE CHART */}
       <div className="grid grid-cols-12 gap-4 mt-6">
 
         {/* EMPLOYEE TABLE */}
@@ -489,15 +230,10 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
                 <tbody>
                   {staffList.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="py-4 text-center">No staff found.</td>
-                    </tr>
+                    <tr><td colSpan="4" className="py-4 text-center">No staff found.</td></tr>
                   ) : (
                     staffList.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="bg-gray-50 hover:bg-gray-100 transition rounded-xl shadow-sm"
-                      >
+                      <tr key={item.id} className="bg-gray-50 hover:bg-gray-100 rounded-xl shadow-sm">
                         <td className="py-3 px-3">
                           <img
                             src={
@@ -515,13 +251,12 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
                         <td className="py-3 px-3">
                           <select
                             value={item.status}
-                            onChange={(e) =>
-                              handleStatusChange(item.id, e.target.value)
-                            }
-                            className={`px-3 py-1 rounded-full border text-sm ${item.status === "Active"
+                            onChange={(e) => handleStatusChange(item.id, e.target.value)}
+                            className={`px-3 py-1 rounded-full border text-sm ${
+                              item.status === "Active"
                                 ? "bg-green-100 text-green-700"
                                 : "bg-red-100 text-red-700"
-                              }`}
+                            }`}
                           >
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
@@ -537,142 +272,94 @@ const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
           </div>
         </div>
 
+
         {/* PIE CHART */}
         <div className="col-span-12 lg:col-span-6">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 h-full">
-  <h2 className="text-xl font-semibold mb-4">Service Popularity</h2>
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 h-full">
+            <h2 className="text-xl font-semibold mb-4">Service Popularity</h2>
 
-  <div className="w-full h-72 relative">
-    <ResponsiveContainer>
-      <PieChart>
-        <Pie
-          data={segmentationData}
-          dataKey="value"
-          innerRadius={60}
-          outerRadius={90}
-          paddingAngle={5}
-          label={({ name, percent }) =>
-            `${name} ${(percent * 100).toFixed(0)}%`
-          }
-          labelLine={false}
-        >
-          {segmentationData.map((entry, index) => (
-            <Cell
-              key={index}
-              fill={COLORS[index % COLORS.length]}
-              stroke="#fff"
-              strokeWidth={2}
-            />
-          ))}
-        </Pie>
-      </PieChart>
-    </ResponsiveContainer>
+            <div className="w-full h-72 relative">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={segmentationData}
+                    dataKey="value"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                    labelLine={false}
+                  >
+                    {segmentationData.map((entry, index) => (
+                      <Cell
+                        key={index}
+                        fill={COLORS[index % COLORS.length]}
+                        stroke="#fff"
+                        strokeWidth={2}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
 
-    {/* CENTER LABEL */}
-    <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
-      <p className="text-gray-500 text-sm">Most Popular</p>
-      <p className="text-xl font-bold text-gray-700">
-        {
-          segmentationData.length > 0
-            ? segmentationData.reduce((max, item) =>
-                item.value > max.value ? item : max
-              ).name
-            : "—"
-        }
-      </p>
-    </div>
-  </div>
-</div>
-
+              <div className="absolute inset-0 flex flex-col justify-center items-center">
+                <p className="text-gray-500 text-sm">Most Popular</p>
+                <p className="text-xl font-bold text-gray-700">
+                  {
+                    segmentationData.length > 0
+                      ? segmentationData.reduce((max, item) =>
+                        item.value > max.value ? item : max
+                      ).name
+                      : "—"
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
 
-      {/* LINE + BAR */}
+
+      {/* LINE + BAR SECTION */}
       <div className="grid grid-cols-12 gap-4 mt-6">
 
-        {/* LINE CHART */}
+        {/* GROWTH CHART */}
         <div className="col-span-12 lg:col-span-6">
           <div className="bg-white rounded shadow p-4">
             <h2 className="text-lg font-semibold mb-3">Customer Growth Rate</h2>
-
-            <div className="w-full h-72 md:h-80">
+            <div className="w-full h-72">
               <ResponsiveContainer>
                 <LineChart data={growthData}>
-
-                  <defs>
-                    <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2196f3" stopOpacity={0.5} />
-                      <stop offset="95%" stopColor="#2196f3" stopOpacity={0} />
-                    </linearGradient>
-
-                    <linearGradient id="colorCancel" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ff9800" stopOpacity={0.5} />
-                      <stop offset="95%" stopColor="#ff9800" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-
-                  <Line
-                    type="monotone"
-                    dataKey="bookings"
-                    stroke="#2196f3"
-                    strokeWidth={3}
-                    fill="url(#colorBookings)"
-                  />
-
-                  <Line
-                    type="monotone"
-                    dataKey="cancellations"
-                    stroke="#ff9800"
-                    strokeWidth={3}
-                    fill="url(#colorCancel)"
-                  />
-
+                  <Line type="monotone" dataKey="bookings" stroke="#2196f3" strokeWidth={3} />
+                  <Line type="monotone" dataKey="cancellations" stroke="#ff9800" strokeWidth={3} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-
           </div>
         </div>
 
-        {/* BAR CHART */}
-
+        {/* MONTH-WISE BOOKINGS BAR CHART */}
         <div className="col-span-12 lg:col-span-6">
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <h2 className="text-xl font-semibold mb-4">Services-wise Bookings</h2>
+            <h2 className="text-xl font-semibold mb-4">Month-wise Bookings</h2>
 
             <div className="w-full h-72 md:h-80">
               <ResponsiveContainer>
-                <BarChart data={barData} barCategoryGap="25%">
-
-                  <XAxis
-                    dataKey="month"
-                    tick={{ fill: "#4a4a4a", fontSize: 14 }}
-                    axisLine={false}
-                  />
-
-                  <YAxis
-                    tick={{ fill: "#4a4a4a", fontSize: 14 }}
-                    axisLine={false}
-                  />
-
-                  <Tooltip cursor={{ fill: "rgba(0, 0, 0, 0.05)" }} />
-
-                  <Bar
-                    dataKey="value"
-                    fill="#3b82f6"
-                    barSize={28}
-                    radius={[10, 10, 10, 10]}
-                  />
+                <BarChart data={monthData} barCategoryGap="20%">
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="total" fill="#3b82f6" radius={[10, 10, 10, 10]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
           </div>
         </div>
 
