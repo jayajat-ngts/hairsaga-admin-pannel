@@ -41,23 +41,23 @@ const Navbar = ({ onMenuClick }) => {
             <MenuIcon />
           </IconButton>
 
-          <SearchWrapper>
+          {/* <SearchWrapper>
             <InputBase placeholder="Search Keywords..." sx={{ flex: 1 }} />
             <SearchIcon color="action" />
-          </SearchWrapper>
+          </SearchWrapper> */}
         </Box>
 
         {/* RIGHT SIDE */}
         <Box display="flex" alignItems="center" gap={2}>
-          <IconButton><FlagIcon /></IconButton>
+          {/* <IconButton><FlagIcon /></IconButton>
           <IconButton><SettingsIcon /></IconButton>
           <IconButton>
             <Badge badgeContent={4} color="error">
               <MailIcon />
             </Badge>
-          </IconButton>
-          <Avatar src="https://i.pravatar.cc/300" />
-        </Box>
+          </IconButton> */}
+           <Avatar sx={{ bgcolor: "#fce7f3", fontSize: "22px", color: "#db2777" }}>💇‍♀️</Avatar>
+</Box>
 
       </Toolbar>
     </AppBar>
